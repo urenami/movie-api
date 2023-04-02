@@ -213,6 +213,14 @@ app.get('/', (req, res) => {
 });
 
 app.get('/movies', (req, res) => {
+  Movies.find()
+        .then((Movies) => {
+            res.status(201).json(Movies);
+        })
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send("Error: " + err);
+        });
 });
 
 //gets data about director
