@@ -32,6 +32,12 @@
             </thead>
             <tbody>
                 <tr>
+                    <td>Return a list of all of the users</td>
+                    <td>/users</td>
+                    <td>GET</td>
+                    <td>a JSON object holding data about all users</td>
+                </tr>
+                <tr>
                     <td>Return a list of ALL movies to the user</td>
                     <td>/movies</td>
                     <td>GET</td>
@@ -68,8 +74,8 @@
                     <td>a text saying the info got updated</td>
                 </tr>
                 <tr>
-                    <td>Allow users to add a movie to their list of favorites (showing only a text that a movie has been added—more on this later)</td>
-                    <td>/users/id/favoriteMovieTitle</td>
+                    <td>Allow users to add a movie to their list of favorites showing a text that a movie has been added to their list</td>
+                    <td>/users/username/favoriteMovieTitle</td>
                     <td>POST</td>
                     <td>a text message that movie was added to favorite list</td>
                 </tr>
