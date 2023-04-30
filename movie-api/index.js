@@ -5,37 +5,39 @@ const express = require('express'),
         uuid = require('uuid'),
         bodyParser = require('body-parser');
         const mongoose = require('mongoose');
-        const Models = require('./models.js')
-        
+       
+// declaring that variable app = deploy express() function
+const app = express();
+
+// use of body-parser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// import auth file
+let auth = require('./auth')(app);
+
+const passport = require('passport');
+require('./passport');
+
+//add schemas to the API        
+const Models = require('./models.js')
 
 const Movies = Models.Movie;
 const Users = Models.User;
 
 mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
-// declaring that variable app = deploy express() function
-const app = express();
-
 // creating a write stream to go to log.txt
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
+app.use(morgan('common', {stream: accessLogStream}));
 
 // morgan logger, express, body-parser
-app.use(morgan('common', {stream: accessLogStream}));
 app.use(express.static('public'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
-
-//auth
-let auth = require('./auth')(app);
-const passport = require('passport');
-require('./passport');
-
-mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
 
 //READ
 app.get('/documentation', (req, res) => {                  
         console.log('Documentation Request');
-        res.sendFile('public/Documentation.html', {root: __dirname});
+        res.sendFile('public/documentation.html', {root: __dirname});
       });
 
 // GET requests
@@ -44,7 +46,7 @@ app.get('/', (req, res) => {
   res.send('Welcome to myFlix app!');
 });
 
-app.get('/users', passport.authenticate('jwt', { session:false }), (req, res) =>  {
+app.get('/users', (req, res) =>  {
   Users.find()
     .then((users) => {
       res.status(201).json(users);
@@ -139,23 +141,21 @@ app.post('/users', (req, res) => {
     });
 });
 
-      
-      app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: false }), (req,res)=> {
-        Users.findOneAndUpdate({ Username: req.params.Username }, {
-                $addToSet: { FavoriteMovies: req.params.id }},
-                req.body,
-                { new: true })
-                .then((updatedUser) => {
-                  res.status(200).json(updatedUser);
-                })
-                .catch(error => {
-                  res.status(500).json({ error: error.message });
-             });
-      });
-      
-      
+app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: false }), (req,res)=> {
+  Users.findOneAndUpdate({ Username: req.params.Username }, {
+          $addToSet: { FavoriteMovies: req.params.id }},
+          req.body,
+          { new: true })
+          .then((updatedUser) => {
+            res.status(200).json(updatedUser);
+          })
+          .catch(error => {
+            res.status(500).json({ error: error.message });
+       });
+});
+
       //UPDATE
-      app.put('/users/:Username', passport.authenticate('jwt', { session: false }), (req, res)=> {
+      app.put('/users/:Username',  passport.authenticate('jwt', { session: false }), (req, res)=> {
         Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
                 {
                   Username: req.body.Username,
@@ -172,6 +172,7 @@ app.post('/users', (req, res) => {
                 res.status(500).json({ error: error.message });
           });      
       });
+      
       
       
       //DELETE
