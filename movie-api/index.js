@@ -9,6 +9,9 @@ const express = require('express'),
 // declaring that variable app = deploy express() function
 const app = express();
 
+//Validation for app
+const { check, validationResult } = require('express-validator');
+
 // use of body-parser
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -133,6 +136,33 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 
 //CREATE
 app.post('/users', (req, res) => {
+  //Validation logic for request
+  
+  [
+    // Username should be required and should be minimum 5 characters long
+    check('Username', 'Username is required and has to be minimum five characters long').isLength({min: 5}),
+    // Username should be only alphanumeric characters
+    check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+    // Password is required
+    check('Password', 'Password is required').not().isEmpty(),
+    // Email is required and should be valid
+    check('Email', 'Email does not appear to be valid').isEmail()
+], (req, res) => {
+    // check the validation object for errors
+    let errors= validationResult(req);
+
+    if (!errors.isEmpty()) {
+        return res.status(422).json({errors: errors.array() });
+    }
+}
+
+  // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
   let hashedPassword = Users.hashPassword(req.body.Password);
   Users.findOne({ Username: req.body.Username })
     .then((user) => {
@@ -142,7 +172,7 @@ app.post('/users', (req, res) => {
         Users
           .create({
             Username: req.body.Username,
-            Password: req.body.Password,
+            Password: hashedPassword,
             Email: req.body.Email,
             Birthday: req.body.Birthday
           })
@@ -173,11 +203,30 @@ app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: 
 });
 
       //UPDATE
-      app.put('/users/:Username',  passport.authenticate('jwt', { session: false }), (req, res)=> {
+        app.put('/users/:Username', passport.authenticate('jwt', {session: false }), [
+          // Username should be required and should be minimum 5 characters long
+          check('Username', 'Username is required and has to be minimum five characters long').isLength({min: 5}),
+          // Username should be only alphanumeric characters
+          check('Username', 'Username contains non alphanumeric characters - not allowed.').isAlphanumeric(),
+          // Password is required
+          check('Password', 'Password is required').not().isEmpty(),
+          // Email is required and should be valid
+          check('Email', 'Email does not appear to be valid').isEmail()
+      ], (req, res) => {
+          // check the validation object for errors
+          let errors= validationResult(req);
+      
+          if (!errors.isEmpty()) {
+              return res.status(422).json({errors: errors.array() });
+          }
+      
+          //Update user info
+          let hashedPassword= Users.hashPassword(req.body.Password)
+
         Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
                 {
                   Username: req.body.Username,
-                  Password: req.body.Password,
+                  Password: hashedpassword,
                   Email: req.body.Email,
                   Birthday: req.body.Birthday
                 }
@@ -194,7 +243,7 @@ app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: 
       
       
       //DELETE
-      app.delete('/users/:Username', passport.authenticate('jwt', { session: false }), (req,res)=>{
+      app.delete('/users/:Username', (req, res) => {
         Users.findOneAndRemove({ Username: req.params.Username })
     .then((user) => {
       if (!user) {
