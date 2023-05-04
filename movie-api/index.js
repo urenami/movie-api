@@ -45,7 +45,7 @@ const Models = require('./models.js')
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect('mongodb://localhost:27017/cfDB', { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect( process.env.CONNECTION_URI, { useNewUrlParser: true, useUnifiedTopology: true });
 
 // creating a write stream to go to log.txt
 const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), { flags: 'a' })
@@ -135,7 +135,7 @@ app.get('/movies/director/:directorName', passport.authenticate('jwt', { session
 });
 
 //CREATE
-app.post('/users', (req, res) => {
+app.post('/users', 
   //Validation logic for request
   
   [
@@ -150,44 +150,38 @@ app.post('/users', (req, res) => {
 ], (req, res) => {
     // check the validation object for errors
     let errors= validationResult(req);
-
     if (!errors.isEmpty()) {
         return res.status(422).json({errors: errors.array() });
     }
-}
 
-  // check the validation object for errors
-    let errors = validationResult(req);
-
-    if (!errors.isEmpty()) {
-      return res.status(422).json({ errors: errors.array() });
-    }
-
-  let hashedPassword = Users.hashPassword(req.body.Password);
-  Users.findOne({ Username: req.body.Username })
+// Add a user to database
+let hashedPassword= Users.hashPassword(req.body.Password)
+Users.findOne({ Username: req.body.Username})
     .then((user) => {
-      if (user) {
-        return res.status(400).send(req.body.Username + 'already exists');
-      } else {
-        Users
-          .create({
-            Username: req.body.Username,
-            Password: hashedPassword,
-            Email: req.body.Email,
-            Birthday: req.body.Birthday
-          })
-          .then((user) =>{res.status(201).json(user) })
-        .catch((error) => {
-          console.error(error);
-          res.status(500).send('Error: ' + error);
-        })
-      }
+        if(user) {
+            return res.status(400).send(req.body.Username + ' already exists');
+        }else {
+            Users
+                .create({
+                    Username: req.body.Username,
+                    Password: hashedPassword,
+                    Email: req.body.Email,
+                    Birthday: req.body.Birthday
+                })
+                .then((user) => {res.status(201).json(user)})
+                .catch((error) => {
+                    console.error(error);
+                    res.status(500).send('Error: '+ error);
+                })
+        }
     })
     .catch((error) => {
-      console.error(error);
-      res.status(500).send('Error: ' + error);
+        console.error(error);
+        res.status(500).send('Error: '+ error);
     });
 });
+
+
 
 app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: false }), (req,res)=> {
   Users.findOneAndUpdate({ Username: req.params.Username }, {
@@ -226,7 +220,7 @@ app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: 
         Users.findOneAndUpdate({ Username: req.params.Username }, { $set:
                 {
                   Username: req.body.Username,
-                  Password: hashedpassword,
+                  Password: hashedPassword,
                   Email: req.body.Email,
                   Birthday: req.body.Birthday
                 }
@@ -236,7 +230,7 @@ app.post('/users/:Username/movies/:id', passport.authenticate('jwt', { session: 
                 res.status(200).json(updatedUser);
               })
               .catch(error => {
-                res.status(500).json({ error: error.message });
+                res.status(500).send({ error: error.message });
           });      
       });
       
