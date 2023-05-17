@@ -19,8 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // require CORS
 const cors = require("cors");
 
-let allowedOrigins = 
-['http://localhost:1234'];
+let allowedOrigins = ["http://localhost:1234"];
 
 app.use(
   cors({
