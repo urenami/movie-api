@@ -19,25 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // require CORS
 const cors = require("cors");
 
-let allowedOrigins = ["http://localhost:1234"];
-
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      if (!origin) {
-        return callback(null, true);
-      } else if (allowedOrigins.indexOf(origin) === -1) {
-        // If a specific origin isn't found on the list of allowed origins
-        let message =
-          "The CORS policy for this application doesn't" +
-          " allow access from origin" +
-          origin;
-        return callback(new Error(message), false);
-      }
-      return callback(null, true);
-    },
-  })
-);
+app.use(cors());
 
 // import auth file
 let auth = require("./auth")(app);
@@ -221,8 +203,7 @@ app.post(
       {
         $addToSet: { FavoriteMovies: req.params.id },
       },
-      req.body,
-      { new: true }
+      req.body
     )
       .then((updatedUser) => {
         res.status(200).json(updatedUser);
@@ -273,8 +254,7 @@ app.put(
           Email: req.body.Email,
           Birthday: req.body.Birthday,
         },
-      },
-      { new: true }
+      }
     )
       .then((updatedUser) => {
         res.status(200).json(updatedUser);
@@ -330,6 +310,6 @@ app.use((err, req, res, next) => {
 
 // listens for requests
 const port = process.env.PORT || 8080;
-app.listen(port, "0.0.0.0", () => {
+app.listen(port, () => {
   console.log("Listening on Port " + port);
 });
