@@ -2,9 +2,9 @@ const express = require("express"),
   morgan = require("morgan"),
   fs = require("fs"),
   path = require("path"),
+  bodyParser = require("body-parser"),
   uuid = require("uuid"),
-  bodyParser = require("body-parser");
-const mongoose = require("mongoose");
+  mongoose = require("mongoose");
 
 // declaring that variable app = deploy express() function
 const app = express();
@@ -18,8 +18,25 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // require CORS
 const cors = require("cors");
+const allowedOrigins = [
+  "https://my-flixdb-56034.herokuapp.com",
+  "http://localhost:1234",
+];
 
-app.use(cors());
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        let message =
+          "The CORS policy for this application doesn’t allow access from origin " +
+          origin;
+        return callback(new Error(message), false);
+      }
+      return callback(null, true);
+    },
+  })
+);
 
 // import auth file
 let auth = require("./auth")(app);
@@ -58,38 +75,50 @@ app.get("/", (req, res) => {
   res.send("Welcome to myFlix app!");
 });
 
-app.get("/users", (req, res) => {
-  Users.find()
-    .then((users) => {
-      res.status(201).json(users);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.find()
+      .then((users) => {
+        res.status(201).json(users);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
-app.get("/users/:Username", (req, res) => {
-  Users.findOne({ Username: req.params.Username })
-    .then((user) => {
-      res.json(user);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/users/:Username",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Users.findOne({ Username: req.params.Username })
+      .then((user) => {
+        res.json(user);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
-app.get("/movies", (req, res) => {
-  Movies.find({ Movies: req.params.Movies })
-    .then((movies) => {
-      res.json(movies);
-    })
-    .catch((err) => {
-      console.error(err);
-      res.status(500).send("Error: " + err);
-    });
-});
+app.get(
+  "/movies",
+  passport.authenticate("jwt", { session: false }),
+  (req, res) => {
+    Movies.find({ Movies: req.params.Movies })
+      .then((movies) => {
+        res.json(movies);
+      })
+      .catch((err) => {
+        console.error(err);
+        res.status(500).send("Error: " + err);
+      });
+  }
+);
 
 //get request to get info on movie using title
 app.get(
