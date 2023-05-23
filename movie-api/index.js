@@ -105,20 +105,16 @@ app.get(
   }
 );
 
-app.get(
-  "/movies",
-  passport.authenticate("jwt", { session: false }),
-  (req, res) => {
-    Movies.find({ Movies: req.params.Movies })
-      .then((movies) => {
-        res.json(movies);
-      })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error: " + err);
-      });
-  }
-);
+app.get("/movies", (req, res) => {
+  Movies.find({ Movies: req.params.Movies })
+    .then((movies) => {
+      res.json(movies);
+    })
+    .catch((err) => {
+      console.error(err);
+      res.status(500).send("Error: " + err);
+    });
+});
 
 //get request to get info on movie using title
 app.get(
