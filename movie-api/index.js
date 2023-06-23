@@ -21,6 +21,7 @@ const cors = require("cors");
 const allowedOrigins = [
   "https://my-flixdb-56034.herokuapp.com",
   "http://localhost:1234",
+  "ezmyflixapp.netlify.app",
 ];
 
 app.use(
