@@ -77,3 +77,11 @@ POST   /users/:Username/movies/:ID  → Add movie to favorites
 DELETE /users/:Username/movies/:ID  → Remove movie from favorites
 PUT    /users/:Username             → Update user info
 DELETE /users/:Username             → Delete user account
+
+## 📌 Versioning
+
+- **v1.0.0 (main branch)**  
+  Stable release with MongoDB, JWT authentication, and core movie/user endpoints.  
+
+- **v2 (development branch)**  
+  Actively being updated with TMDB integration, cleaner endpoints, and new features.  
