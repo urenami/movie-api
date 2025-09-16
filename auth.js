@@ -29,7 +29,11 @@ module.exports = (router) => {
           });
         }
         let token = generateJWTToken(user.toJSON());
-        return res.json({ user, token });
+
+        // 👇 Strip password field before sending back user
+        let { Password, ...userWithoutPassword } = user.toJSON();
+
+        return res.json({ user: userWithoutPassword, token });
       });
     })(req, res);
   });

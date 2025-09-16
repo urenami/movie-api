@@ -1,35 +1,79 @@
-# myflix-app
+# myFlix App
 
-## Description
+myFlix is a full-stack application that allows users to explore movies, register for an account, update their profile, and create a list of favorite movies.  
+It is built with **Node.js/Express** on the backend, **MongoDB** for the database, and has a separate frontend client hosted on Netlify.
 
-Movie API is a backend server application built with Node.js and Express.js. It provides a RESTful API for accessing movie data and managing user accounts.
+---
 
 ## Features
 
-- User registration and authentication
-- Movie information retrieval
-- User profile management
-- Movie favorites functionality
+- **User Accounts**  
+  - Register, log in, update profile info, or delete account  
+  - Secure password hashing & JWT authentication  
 
-## Installation
+- **Movies API**  
+  - Get a full list of movies  
+  - Retrieve details about a movie by title  
+  - Get information on directors and genres  
 
-1. Clone the repository.
-2. Navigate to the project directory.
-3. Install the dependencies using `npm install`.
+- **Favorites**  
+  - Add or remove movies from your favorites list  
 
-## Usage
+---
 
-1. Set up a MongoDB database and configure the connection string in `config.js`.
-2. Start the server using `npm start`.
-3. Access the API endpoints using a REST client or browser.
+## Live Demo
+- **Frontend (Netlify):** 
 
+[myFlix Client](https://ezmyflixapp.netlify.app/login)
 
-## Technologies Used
+- **Backend (Local or Deployable):** 
 
-- Node.js
-- Express.js
-- MongoDB
+This repo contains the API server. 
 
-## Link to hosted project
+### Demo Login (optional)
+Use this account if you don’t want to sign up:
+- Username: `demoUser`  
+- Password: `demoPass123`  
 
-https://my-flixdb-56034.herokuapp.com/
+Or create your own account via the sign-up page.
+
+---
+
+## Installation & Setup
+
+1. Clone the repository  
+   ```bash
+   git clone https://github.com/urenami/movie-api.git
+   cd movie-api
+
+## Install dependencies
+
+npm install
+
+## Create a .env file with your MongoDB connection string
+
+CONNECTION_URI=mongodb+srv://<username>:<password>@cluster0.abcd123.mongodb.net/myflixDB
+
+## Or, if running MongoDB locally:
+
+CONNECTION_URI=mongodb://localhost:27017/myflixDB
+
+## Start the server
+
+npm start
+
+## Technologies
+- Node.js / Express  
+- MongoDB / Mongoose  
+- Passport & JWT Authentication  
+
+## API Endpoints (Examples)
+
+POST   /users                       → Register new user
+POST   /login                       → Login and receive token
+GET    /movies                      → Get all movies (requires token)
+GET    /movies/:Title               → Get movie by title
+POST   /users/:Username/movies/:ID  → Add movie to favorites
+DELETE /users/:Username/movies/:ID  → Remove movie from favorites
+PUT    /users/:Username             → Update user info
+DELETE /users/:Username             → Delete user account
