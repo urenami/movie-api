@@ -21,9 +21,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // require CORS
 const cors = require("cors");
 const allowedOrigins = [
-  "https://my-flixdb-56034.herokuapp.com",
-  "http://localhost:1234",
-  "ezmyflixapp.netlify.app",
+  "https://movie-api.onrender.com",
+  "https://ezmyflixapp.netlify.app",
+  "http://localhost:3000",
 ];
 
 app.use(
@@ -53,7 +53,7 @@ const Models = require("./models.js");
 const Movies = Models.Movie;
 const Users = Models.User;
 
-mongoose.connect(process.env.CONNECTION_URI, {
+mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
