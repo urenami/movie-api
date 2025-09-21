@@ -21,9 +21,10 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // require CORS
 const cors = require("cors");
 const allowedOrigins = [
-  "https://movie-api.onrender.com",
+  "https://movie-api-ponl.onrender.com",
   "https://ezmyflixapp.netlify.app",
   "http://localhost:3000",
+  "http://localhost:1234",
 ];
 
 app.use(
