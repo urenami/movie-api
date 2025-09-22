@@ -9,10 +9,6 @@ const Users = Models.User,
 
 const jwtSecret = process.env.JWT_SECRET;
 
-// Debug log to check if JWT_SECRET is loaded
-console.log("JWT_SECRET in passport.js:", jwtSecret ? "Loaded " : " Missing!");
-
-// LocalStrategy for username/password login
 passport.use(
   new LocalStrategy(
     {
@@ -20,18 +16,18 @@ passport.use(
       passwordField: "Password",
     },
     (username, password, callback) => {
-      console.log("Login attempt:", username, password);
+      console.log("[LocalStrategy] Attempting login:", username);
       Users.findOne({ Username: username }, (error, user) => {
         if (error) {
-          console.error("LocalStrategy error:", error);
+          console.error("[LocalStrategy] Error:", error);
           return callback(error);
         }
 
         if (user && user.validatePassword(password)) {
-          console.log("Login successful for:", username);
+          console.log("[LocalStrategy]  Login successful for", username);
           return callback(null, user);
         } else {
-          console.log("Incorrect username or password for:", username);
+          console.warn("[LocalStrategy] Invalid login for", username);
           return callback(null, false, {
             message: "Incorrect username or password.",
           });
@@ -41,7 +37,6 @@ passport.use(
   )
 );
 
-// JWT Strategy for protecting endpoints
 passport.use(
   new JWTStrategy(
     {
@@ -49,18 +44,22 @@ passport.use(
       secretOrKey: jwtSecret,
     },
     (jwtPayload, callback) => {
-      console.log("JWT payload received:", jwtPayload);
+      console.log("[JWTStrategy] 🔑 Received JWT payload:", jwtPayload);
+
       return Users.findById(jwtPayload._id)
         .then((user) => {
-          if (user) {
-            console.log("JWT validated for:", user.Username);
-          } else {
-            console.log("JWT user not found:", jwtPayload._id);
+          if (!user) {
+            console.warn(
+              "[JWTStrategy]  No user found with ID:",
+              jwtPayload._id
+            );
+            return callback(null, false);
           }
+          console.log("[JWTStrategy]  User authenticated:", user.Username);
           return callback(null, user);
         })
         .catch((error) => {
-          console.error("JWTStrategy error:", error);
+          console.error("[JWTStrategy] Error:", error);
           return callback(error);
         });
     }
