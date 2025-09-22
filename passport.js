@@ -8,6 +8,7 @@ const Users = Models.User,
   ExtractJWT = passportJWT.ExtractJwt;
 
 const jwtSecret = process.env.JWT_SECRET;
+console.log("[passport.js] Loaded JWT_SECRET:", jwtSecret);
 
 passport.use(
   new LocalStrategy(
