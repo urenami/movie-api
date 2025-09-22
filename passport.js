@@ -7,9 +7,12 @@ const Users = Models.User,
   JWTStrategy = passportJWT.Strategy,
   ExtractJWT = passportJWT.ExtractJwt;
 
-// Use JWT_SECRET from .env
 const jwtSecret = process.env.JWT_SECRET;
 
+// Debug log to check if JWT_SECRET is loaded
+console.log("JWT_SECRET in passport.js:", jwtSecret ? "Loaded " : " Missing!");
+
+// LocalStrategy for username/password login
 passport.use(
   new LocalStrategy(
     {
@@ -17,18 +20,18 @@ passport.use(
       passwordField: "Password",
     },
     (username, password, callback) => {
-      console.log(username + "  " + password);
+      console.log("Login attempt:", username, password);
       Users.findOne({ Username: username }, (error, user) => {
         if (error) {
-          console.log(error);
+          console.error("LocalStrategy error:", error);
           return callback(error);
         }
 
         if (user && user.validatePassword(password)) {
-          console.log("finished");
+          console.log("Login successful for:", username);
           return callback(null, user);
         } else {
-          console.log("incorrect username or password");
+          console.log("Incorrect username or password for:", username);
           return callback(null, false, {
             message: "Incorrect username or password.",
           });
@@ -38,6 +41,7 @@ passport.use(
   )
 );
 
+// JWT Strategy for protecting endpoints
 passport.use(
   new JWTStrategy(
     {
@@ -45,9 +49,20 @@ passport.use(
       secretOrKey: jwtSecret,
     },
     (jwtPayload, callback) => {
+      console.log("JWT payload received:", jwtPayload);
       return Users.findById(jwtPayload._id)
-        .then((user) => callback(null, user))
-        .catch((error) => callback(error));
+        .then((user) => {
+          if (user) {
+            console.log("JWT validated for:", user.Username);
+          } else {
+            console.log("JWT user not found:", jwtPayload._id);
+          }
+          return callback(null, user);
+        })
+        .catch((error) => {
+          console.error("JWTStrategy error:", error);
+          return callback(error);
+        });
     }
   )
 );
