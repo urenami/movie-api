@@ -1,9 +1,8 @@
 # myFlix App
 
-myFlix is a full-stack application that allows users to explore movies, register for an account, update their profile, and create a list of favorite movies.  
-It is built with **Node.js/Express** on the backend, **MongoDB** for the database, and has a separate frontend client hosted on Netlify.
-
----
+myFlix is a full-stack application that allows users to explore movies, register for an account, update their profile, and create a list of favorite movies.
+Backend: Node.js/Express API with MongoDB & JWT authentication (deployed on Render)
+Frontend: React client (deployed on Netlify)
 
 ## Features
 
@@ -28,12 +27,12 @@ It is built with **Node.js/Express** on the backend, **MongoDB** for the databas
 
 - **Backend (Local or Deployable):** 
 
-This repo contains the API server. 
+ https://movie-api-ponl.onrender.com/
 
 ### Demo Login (optional)
 Use this account if you don’t want to sign up:
-- Username: `demoUser`  
-- Password: `demoPass123`  
+- Username: `testdemo`  
+- Password: `demopass123`  
 
 Or create your own account via the sign-up page.
 
@@ -41,28 +40,23 @@ Or create your own account via the sign-up page.
 
 ## Installation & Setup
 
-1. Clone the repository  
-   ```bash
-   git clone https://github.com/urenami/movie-api.git
-   cd movie-api
+# Clone repo
+git clone https://github.com/urenami/movie-api.git
+cd movie-api
 
-## Install dependencies
-
+# Install dependencies
 npm install
 
-## Create a .env file with your MongoDB connection string
+# Create a .env file
+MONGO_URI=mongodb+srv://<username>:<password>@cluster0.xxxx.mongodb.net/myFlixDB
+JWT_SECRET=mysupersecretjwtkey12345
 
-CONNECTION_URI=mongodb+srv://<username>:<password>@cluster0.abcd123.mongodb.net/myflixDB
-
-## Or, if running MongoDB locally:
-
-CONNECTION_URI=mongodb://localhost:27017/myflixDB
-
-## Start the server
-
+# Start server
 npm start
 
+
 ## Technologies
+- React (Frontend, Netlify)
 - Node.js / Express  
 - MongoDB / Mongoose  
 - Passport & JWT Authentication  
@@ -81,7 +75,7 @@ DELETE /users/:Username             → Delete user account
 ## 📌 Versioning
 
 - **v1.0.0 (main branch)**  
-  Stable release with MongoDB, JWT authentication, and core movie/user endpoints.  
+Full-stack app (React client + Node API) deployed and working.
 
 - **v2 (development branch)**  
-  Actively being updated with TMDB integration, cleaner endpoints, and new features.  
+  TMDB integration, improved UI, and additional features.
